@@ -6,6 +6,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// TODO: Create overrides to add a help for each command
+
 func (c *GenericCommand) BuildHelpEmbed(session *discordgo.Session, message *discordgo.MessageCreate) {
 	embed := &discordgo.MessageEmbed{
 		Author:      &discordgo.MessageEmbedAuthor{},

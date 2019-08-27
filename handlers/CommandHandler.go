@@ -15,10 +15,15 @@ type CommandHandler struct {
 func (c *CommandHandler) ExecuteCommand(session *discordgo.Session, message *discordgo.MessageCreate) {
 	messageArray := strings.Split(message.Content, " ")
 	messageArray[0] = strings.ToLower(messageArray[0][1:])
+	var commandList *commands.GenericCommand
+	commandList = new(commands.GenericCommand)
 
-	if messageArray[0] == "help" {
-		var helpEmbed *commands.GenericCommand
-		helpEmbed = new(commands.GenericCommand)
-		helpEmbed.BuildHelpEmbed(session, message)
+	switch messageArray[0] {
+	case "help":
+		commandList.BuildHelpEmbed(session, message)
+		break
+	case "currency":
+		commandList.GetCurrency(session, message, messageArray)
+		break
 	}
 }
