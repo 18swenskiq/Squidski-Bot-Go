@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -9,8 +10,16 @@ import (
 	"syscall"
 	"unsafe"
 
+	handlers "./handlers"
+
 	"github.com/bwmarrin/discordgo"
 )
+
+type GeneralSettings struct {
+	CallSymbol string
+}
+
+var globalCall = grabSettings()
 
 func main() {
 	// Load the botkey
@@ -19,6 +28,8 @@ func main() {
 		fmt.Println("File reading error", err)
 		return
 	}
+	fmt.Println("Sucessfully opened botkey.txt")
+
 	// Convert the botkey from bytes to String
 	bh := (*reflect.SliceHeader)(unsafe.Pointer(&botKeyBytes))
 	sh := reflect.StringHeader{bh.Data, bh.Len}
@@ -51,6 +62,22 @@ func main() {
 	dg.Close()
 }
 
+// Get the general settings file
+func grabSettings() string {
+	settingsJson, err := ioutil.ReadFile("settings/general.json")
+	if err != nil {
+		fmt.Print(err)
+		return ("Error reading general settings file")
+	}
+	var data GeneralSettings
+	err = json.Unmarshal(settingsJson, &data)
+	if err != nil {
+		fmt.Println("error:", err)
+	}
+	fmt.Println("The global call symbol is " + data.CallSymbol)
+	return (data.CallSymbol)
+}
+
 // This function will be called (due to AddHandler above) every time a new
 // message is created on any channel that the authenticated bot has access to.
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -65,8 +92,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "Pong!")
 	}
 
-	// If the message is "pong" reply with "Ping!"
-	if m.Content == "pong" {
-		s.ChannelMessageSend(m.ChannelID, "Ping!")
+	if m.Content[0] == byte(globalCall[0]) {
+		var newCommand *handlers.CommandHandler
+		newCommand = new(handlers.CommandHandler)
+		newCommand.ExecuteCommand(s, m)
 	}
 }
