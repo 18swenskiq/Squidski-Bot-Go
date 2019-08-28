@@ -78,6 +78,7 @@ func (c *GenericCommand) MuteUser(session *discordgo.Session, message *discordgo
 	db.Update(func(tx *bolt.Tx) error {
 		tx.CreateBucketIfNotExists([]byte("MutedUsers"))
 		b := tx.Bucket([]byte("MutedUsers"))
+		//err := b.Put([]byte("0"), []byte("1000000000000000000000000000000"))
 		err := b.Put([]byte(message.Mentions[0].ID), []byte(timeMutedUntil.String()))
 		return err
 	})

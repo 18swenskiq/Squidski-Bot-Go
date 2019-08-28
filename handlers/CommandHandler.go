@@ -28,5 +28,8 @@ func (c *CommandHandler) ExecuteCommand(session *discordgo.Session, message *dis
 	case "mute":
 		commandList.MuteUser(session, message, messageArray, adminRole, mutedRole)
 		break
+	case "unmute":
+		commandList.UnmuteUser(session, message, messageArray, adminRole, mutedRole)
+		break
 	}
 }
