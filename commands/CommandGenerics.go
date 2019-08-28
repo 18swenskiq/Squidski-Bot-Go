@@ -1,6 +1,8 @@
 package commands
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"github.com/bwmarrin/discordgo"
+)
 
 type GenericCommand struct {
 	session discordgo.Session

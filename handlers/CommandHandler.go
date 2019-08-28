@@ -12,7 +12,7 @@ type CommandHandler struct {
 	message discordgo.MessageCreate
 }
 
-func (c *CommandHandler) ExecuteCommand(session *discordgo.Session, message *discordgo.MessageCreate) {
+func (c *CommandHandler) ExecuteCommand(session *discordgo.Session, message *discordgo.MessageCreate, adminRole string, mutedRole string) {
 	messageArray := strings.Split(message.Content, " ")
 	messageArray[0] = strings.ToLower(messageArray[0][1:])
 	var commandList *commands.GenericCommand
@@ -24,6 +24,9 @@ func (c *CommandHandler) ExecuteCommand(session *discordgo.Session, message *dis
 		break
 	case "currency":
 		commandList.GetCurrency(session, message, messageArray)
+		break
+	case "mute":
+		commandList.MuteUser(session, message, messageArray, adminRole, mutedRole)
 		break
 	}
 }

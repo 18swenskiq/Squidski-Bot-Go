@@ -16,10 +16,12 @@ import (
 )
 
 type GeneralSettings struct {
-	CallSymbol string
+	CallSymbol  string
+	AdminRoleId string
+	MutedRole   string
 }
 
-var globalCall = grabSettings()
+var globalCall = grabSettings().CallSymbol
 
 func main() {
 	// Load the botkey
@@ -42,6 +44,9 @@ func main() {
 		return
 	}
 
+	// Print globalcall
+	fmt.Println("The global call symbol is " + globalCall)
+
 	// Register the messageCreate as a callback for MessageCreate events.
 	dg.AddHandler(messageCreate)
 
@@ -63,19 +68,17 @@ func main() {
 }
 
 // Get the general settings file
-func grabSettings() string {
+func grabSettings() GeneralSettings {
 	settingsJson, err := ioutil.ReadFile("settings/general.json")
 	if err != nil {
 		fmt.Print(err)
-		return ("Error reading general settings file")
 	}
 	var data GeneralSettings
 	err = json.Unmarshal(settingsJson, &data)
 	if err != nil {
 		fmt.Println("error:", err)
 	}
-	fmt.Println("The global call symbol is " + data.CallSymbol)
-	return (data.CallSymbol)
+	return data
 }
 
 // This function will be called (due to AddHandler above) every time a new
@@ -95,6 +98,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Content[0] == byte(globalCall[0]) {
 		var newCommand *handlers.CommandHandler
 		newCommand = new(handlers.CommandHandler)
-		newCommand.ExecuteCommand(s, m)
+		newCommand.ExecuteCommand(s, m, grabSettings().AdminRoleId, grabSettings().MutedRole)
 	}
 }
