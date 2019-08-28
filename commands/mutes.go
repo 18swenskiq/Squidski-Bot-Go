@@ -25,6 +25,7 @@ func (c *GenericCommand) ViewMutes(session *discordgo.Session, message *discordg
 		}
 		return nil
 	})
+
 	stringToPrint := "\n"
 	for i := range nameValuesArray {
 		stringToPrint += "<@" + nameValuesArray[i] + "> is muted until " + valueValuesArray[i] + "\n"

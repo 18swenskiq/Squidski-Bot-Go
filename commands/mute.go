@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
+	utilities "../utilities"
 	"github.com/asaskevich/govalidator"
 	"github.com/bwmarrin/discordgo"
-	bolt "go.etcd.io/bbolt"
 )
 
 func (c *GenericCommand) MuteUser(session *discordgo.Session, message *discordgo.MessageCreate, messageArray []string, adminRole string, mutedRole string) {
@@ -69,25 +69,10 @@ func (c *GenericCommand) MuteUser(session *discordgo.Session, message *discordgo
 	timeMutedUntil = timeMutedUntil.Add(time.Minute * time.Duration(timeMutedFloat))
 
 	// Let's open up the DB so we can store the mute
-	db, err := bolt.Open("../storage.db", 0600, nil)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer db.Close()
+	var database *utilities.GeneralDB
+	database = new(utilities.GeneralDB)
+	database.WriteToDB("MutedUsers", message.Mentions[0].ID, timeMutedUntil.String())
 
-	db.Update(func(tx *bolt.Tx) error {
-		tx.CreateBucketIfNotExists([]byte("MutedUsers"))
-		b := tx.Bucket([]byte("MutedUsers"))
-		//err := b.Put([]byte("0"), []byte("1000000000000000000000000000000"))
-		err := b.Put([]byte(message.Mentions[0].ID), []byte(timeMutedUntil.String()))
-		return err
-	})
-	//db.View(func(tx *bolt.Tx) error {
-	//b := tx.Bucket([]byte("MutedUsers"))
-	//v := b.Get([]byte(message.Mentions[0].ID))
-	//fmt.Printf("The user is muted until: %d\n", v)
-	//return nil
-	//})
 	err = session.GuildMemberEdit(message.GuildID, message.Mentions[0].ID, []string{mutedRole})
 	if err != nil {
 		fmt.Println(err)
