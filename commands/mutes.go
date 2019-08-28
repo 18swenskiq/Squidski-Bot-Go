@@ -1,35 +1,22 @@
 package commands
 
 import (
-	"fmt"
-
+	utilities "../utilities"
 	"github.com/bwmarrin/discordgo"
-	bolt "go.etcd.io/bbolt"
 )
 
-func (c *GenericCommand) ViewMutes(session *discordgo.Session, message *discordgo.MessageCreate, mutedRole string) {
-	db, err := bolt.Open("../storage.db", 0600, nil)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer db.Close()
-	nameValuesArray := []string{}
-	valueValuesArray := []string{}
-	db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte("MutedUsers"))
-		c := b.Cursor()
+func (c *GenericCommand) ViewMutes(session *discordgo.Session, message *discordgo.MessageCreate) {
 
-		for k, v := c.First(); k != nil; k, v = c.Next() {
-			nameValuesArray = append(nameValuesArray, string(k))
-			valueValuesArray = append(valueValuesArray, string(v))
+	var database *utilities.GeneralDB
+	database = new(utilities.GeneralDB)
+	names, values := database.IterateOverKeysInBucketReturnBoth("MutedUsers")
+	if len(names) == 0 {
+		session.ChannelMessageSend(message.ChannelID, "No users are currently muted (according to the database)")
+	} else {
+		stringToPrint := "\n"
+		for i := range names {
+			stringToPrint += "<@" + names[i] + "> is muted until " + values[i] + "\n"
 		}
-		return nil
-	})
-
-	stringToPrint := "\n"
-	for i := range nameValuesArray {
-		stringToPrint += "<@" + nameValuesArray[i] + "> is muted until " + valueValuesArray[i] + "\n"
+		session.ChannelMessageSend(message.ChannelID, stringToPrint)
 	}
-	stringToPrint += "\n"
-	session.ChannelMessageSend(message.ChannelID, stringToPrint)
 }

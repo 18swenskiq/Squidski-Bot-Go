@@ -11,6 +11,7 @@ import (
 	"unsafe"
 
 	handlers "./handlers"
+	utilities "./utilities"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -43,6 +44,11 @@ func main() {
 		fmt.Println("error creating Discord session", err)
 		return
 	}
+
+	// Ensure our buckets in the DB exist
+	var database *utilities.GeneralDB
+	database = new(utilities.GeneralDB)
+	database.EnsureBucketsExist("MutedUsers")
 
 	// Print globalcall
 	fmt.Println("The global call symbol is " + globalCall)

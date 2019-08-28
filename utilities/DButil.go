@@ -14,19 +14,41 @@ type GeneralDB struct {
 
 func (c *GeneralDB) WriteToDB(bucket string, keyName string, keyValue string) {
 
-	db := GenericOpenDB("./storage.db")
+	db, err := bolt.Open("./storage.db", 0600, nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer db.Close()
 
 	db.Update(func(tx *bolt.Tx) error {
-		tx.CreateBucketIfNotExists([]byte(bucket))
 		b := tx.Bucket([]byte(bucket))
 		err := b.Put([]byte(keyName), []byte(keyValue))
 		return err
 	})
+	db.Close()
+}
+
+func (c *GeneralDB) DeleteKey(bucket string, keyName string) {
+	db, err := bolt.Open("./storage.db", 0600, nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer db.Close()
+	db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(bucket))
+		b.Delete([]byte(keyName))
+		return nil
+	})
+	db.Close()
 }
 
 func (c *GeneralDB) ReadKey(bucket string, keyName string) []byte {
 
-	db := GenericOpenDB("./storage.db")
+	db, err := bolt.Open("./storage.db", 0600, nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer db.Close()
 
 	v := []byte{0}
 	db.View(func(tx *bolt.Tx) error {
@@ -34,18 +56,46 @@ func (c *GeneralDB) ReadKey(bucket string, keyName string) []byte {
 		v = b.Get([]byte(keyName))
 		return nil
 	})
+	db.Close()
 	return v
 }
 
-//func (c *GeneralDB) IterateOverKeysInBucketReturnBoth() [][]string {
-
-//}
-
-func GenericOpenDB(dbName string) *bolt.DB {
-	db, err := bolt.Open(dbName, 0600, nil)
+func (c *GeneralDB) IterateOverKeysInBucketReturnBoth(bucket string) ([]string, []string) {
+	db, err := bolt.Open("./storage.db", 0600, nil)
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer db.Close()
-	return db
+	nameValuesArray := []string{}
+	valueValuesArray := []string{}
+	db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(bucket))
+		c := b.Cursor()
+
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+			nameValuesArray = append(nameValuesArray, string(k))
+			valueValuesArray = append(valueValuesArray, string(v))
+		}
+		return nil
+	})
+	db.Close()
+	return nameValuesArray, valueValuesArray
+}
+
+func (c *GeneralDB) EnsureBucketsExist(buckets string) {
+	db, err := bolt.Open("storage.db", 0600, nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer db.Close()
+
+	db.Update(func(tx *bolt.Tx) error {
+		b, err := tx.CreateBucketIfNotExists(([]byte(buckets)))
+		if err != nil {
+			return fmt.Errorf("create bucket: %s", err)
+		}
+		fmt.Printf("Bucket %c exists\n", b)
+		return nil
+	})
+	db.Close()
 }
