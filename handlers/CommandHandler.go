@@ -20,7 +20,7 @@ func (c *CommandHandler) ExecuteCommand(session *discordgo.Session, message *dis
 
 	switch messageArray[0] {
 	case "help":
-		commandList.BuildHelpEmbed(session, message)
+		commandList.BuildHelpEmbed(session, message, adminRole)
 		break
 	case "currency":
 		commandList.GetCurrency(session, message, messageArray)
@@ -37,5 +37,7 @@ func (c *CommandHandler) ExecuteCommand(session *discordgo.Session, message *dis
 	case "pings":
 		commandList.ChangePingState(session, message, pingsRole)
 		break
+	case "roleping":
+		commandList.PingRole(session, message, adminRole, pingsRole)
 	}
 }

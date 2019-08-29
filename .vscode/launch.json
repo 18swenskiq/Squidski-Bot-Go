@@ -10,6 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "H:\\DriveBackup\\Desktop\\SquidBotGo",
+            //"program": "C:\\Users\\Quinton\\Google Drive\\Desktop\\SquidBotGo",
             "env": {},
             "args": []
         }
