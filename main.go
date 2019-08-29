@@ -118,6 +118,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Content[0] == byte(globalCall[0]) {
 		var newCommand *handlers.CommandHandler
 		newCommand = new(handlers.CommandHandler)
-		newCommand.ExecuteCommand(s, m, grabSettings().AdminRoleId, grabSettings().MutedRole)
+		newCommand.ExecuteCommand(s, m, grabSettings().AdminRoleId, grabSettings().MutedRole, grabSettings().PingsRole)
 	}
 }

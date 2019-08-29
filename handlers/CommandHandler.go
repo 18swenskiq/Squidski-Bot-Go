@@ -12,7 +12,7 @@ type CommandHandler struct {
 	message discordgo.MessageCreate
 }
 
-func (c *CommandHandler) ExecuteCommand(session *discordgo.Session, message *discordgo.MessageCreate, adminRole string, mutedRole string) {
+func (c *CommandHandler) ExecuteCommand(session *discordgo.Session, message *discordgo.MessageCreate, adminRole string, mutedRole string, pingsRole string) {
 	messageArray := strings.Split(message.Content, " ")
 	messageArray[0] = strings.ToLower(messageArray[0][1:])
 	var commandList *commands.GenericCommand
@@ -33,6 +33,9 @@ func (c *CommandHandler) ExecuteCommand(session *discordgo.Session, message *dis
 		break
 	case "mutes":
 		commandList.ViewMutes(session, message)
+		break
+	case "pings":
+		commandList.ChangePingState(session, message, pingsRole)
 		break
 	}
 }
