@@ -22,6 +22,7 @@ type GeneralSettings struct {
 	AdminRoleId string
 	MutedRole   string
 	ServerId    string
+	PingsRole   string
 }
 
 var globalCall = grabSettings().CallSymbol
@@ -62,6 +63,7 @@ func main() {
 
 	// Register the messageCreate as a callback for MessageCreate events.
 	dg.AddHandler(messageCreate)
+	dg.AddHandler(guildMemberAdd)
 
 	// Open a websocket connection to Discord and being listening.
 	err = dg.Open()
@@ -94,12 +96,25 @@ func grabSettings() GeneralSettings {
 	return data
 }
 
+// Listen for users joining, then give them the pings role
+func guildMemberAdd(s *discordgo.Session, event *discordgo.GuildMemberAdd) {
+	err := s.GuildMemberRoleAdd(grabSettings().ServerId, event.User.ID, grabSettings().PingsRole)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
 // This function will be called (due to AddHandler above) every time a new
 // message is created on any channel that the authenticated bot has access to.
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Ignore all messages created by the bot itself
 	// This isn't required but its good practice
-
+	if m.Author.ID == s.State.User.ID {
+		return
+	}
+	if len(m.Content) < 1 {
+		return
+	}
 	if m.Content[0] == byte(globalCall[0]) {
 		var newCommand *handlers.CommandHandler
 		newCommand = new(handlers.CommandHandler)
