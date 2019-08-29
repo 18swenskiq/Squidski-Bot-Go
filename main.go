@@ -11,6 +11,7 @@ import (
 	"unsafe"
 
 	handlers "./handlers"
+	services "./services"
 	utilities "./utilities"
 
 	"github.com/bwmarrin/discordgo"
@@ -20,6 +21,7 @@ type GeneralSettings struct {
 	CallSymbol  string
 	AdminRoleId string
 	MutedRole   string
+	ServerId    string
 }
 
 var globalCall = grabSettings().CallSymbol
@@ -52,6 +54,11 @@ func main() {
 
 	// Print globalcall
 	fmt.Println("The global call symbol is " + globalCall)
+
+	// Start services
+	var muteService *services.MuteService
+	muteService = new(services.MuteService)
+	go muteService.MuteService(dg, grabSettings().MutedRole, grabSettings().ServerId)
 
 	// Register the messageCreate as a callback for MessageCreate events.
 	dg.AddHandler(messageCreate)
@@ -92,14 +99,6 @@ func grabSettings() GeneralSettings {
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Ignore all messages created by the bot itself
 	// This isn't required but its good practice
-	if m.Author.ID == s.State.User.ID {
-		return
-	}
-
-	// If the message is "ping" reply with "Pong!"
-	if m.Content == "ping" {
-		s.ChannelMessageSend(m.ChannelID, "Pong!")
-	}
 
 	if m.Content[0] == byte(globalCall[0]) {
 		var newCommand *handlers.CommandHandler

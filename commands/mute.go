@@ -71,7 +71,7 @@ func (c *GenericCommand) MuteUser(session *discordgo.Session, message *discordgo
 	// Let's open up the DB so we can store the mute
 	var database *utilities.GeneralDB
 	database = new(utilities.GeneralDB)
-	database.WriteToDB("MutedUsers", message.Mentions[0].ID, timeMutedUntil.String())
+	database.WriteToDB("MutedUsers", message.Mentions[0].ID, timeMutedUntil.Format("2006-01-02 15:04:05-07:00"))
 
 	err = session.GuildMemberEdit(message.GuildID, message.Mentions[0].ID, []string{mutedRole})
 	if err != nil {
