@@ -12,7 +12,7 @@ type CommandHandler struct {
 	message discordgo.MessageCreate
 }
 
-func (c *CommandHandler) ExecuteCommand(session *discordgo.Session, message *discordgo.MessageCreate, adminRole string, mutedRole string, pingsRole string) {
+func (c *CommandHandler) ExecuteCommand(session *discordgo.Session, message *discordgo.MessageCreate, adminRole string, mutedRole string, pingsRole string, ownerID string) {
 	messageArray := strings.Split(message.Content, " ")
 	messageArray[0] = strings.ToLower(messageArray[0][1:])
 	var commandList *commands.GenericCommand
@@ -39,5 +39,12 @@ func (c *CommandHandler) ExecuteCommand(session *discordgo.Session, message *dis
 		break
 	case "roleping":
 		commandList.PingRole(session, message, adminRole, pingsRole)
+		break
+	case "addtodb":
+		commandList.AddToDB(session, message, messageArray, ownerID)
+		break
+	case "squidskifact":
+		commandList.GetSquidskiFact(session, message)
+		break
 	}
 }

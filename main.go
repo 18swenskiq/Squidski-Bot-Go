@@ -23,6 +23,7 @@ type GeneralSettings struct {
 	MutedRole   string
 	ServerId    string
 	PingsRole   string
+	OwnerID     string
 }
 
 var globalCall = grabSettings().CallSymbol
@@ -52,6 +53,7 @@ func main() {
 	var database *utilities.GeneralDB
 	database = new(utilities.GeneralDB)
 	database.EnsureBucketsExist("MutedUsers")
+	database.EnsureBucketsExist("SquidskiFacts")
 
 	// Print globalcall
 	fmt.Println("The global call symbol is " + globalCall)
@@ -118,6 +120,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Content[0] == byte(globalCall[0]) {
 		var newCommand *handlers.CommandHandler
 		newCommand = new(handlers.CommandHandler)
-		newCommand.ExecuteCommand(s, m, grabSettings().AdminRoleId, grabSettings().MutedRole, grabSettings().PingsRole)
+		data := grabSettings()
+		newCommand.ExecuteCommand(s, m, data.AdminRoleId, data.MutedRole, data.PingsRole, data.OwnerID)
 	}
 }
