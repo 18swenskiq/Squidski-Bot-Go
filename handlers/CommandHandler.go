@@ -46,5 +46,11 @@ func (c *CommandHandler) ExecuteCommand(session *discordgo.Session, message *dis
 	case "squidskifact":
 		commandList.GetSquidskiFact(session, message)
 		break
+	case "removefromdb":
+		commandList.RemoveFromDB(session, message, messageArray, ownerID)
+		break
+	case "seinfeldme":
+		commandList.GetSeinfeldQuote(session, message)
+		break
 	}
 }
