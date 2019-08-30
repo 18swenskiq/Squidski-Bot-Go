@@ -52,5 +52,11 @@ func (c *CommandHandler) ExecuteCommand(session *discordgo.Session, message *dis
 	case "seinfeldme":
 		commandList.GetSeinfeldQuote(session, message)
 		break
+	case "casino":
+		commandList.UseCasino(session, message, messageArray)
+		break
+	case "c":
+		commandList.UseCasino(session, message, messageArray)
+		break
 	}
 }

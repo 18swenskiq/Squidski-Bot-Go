@@ -90,11 +90,10 @@ func (c *GeneralDB) EnsureBucketsExist(buckets string) {
 	defer db.Close()
 
 	db.Update(func(tx *bolt.Tx) error {
-		b, err := tx.CreateBucketIfNotExists(([]byte(buckets)))
+		_, err := tx.CreateBucketIfNotExists(([]byte(buckets)))
 		if err != nil {
 			return fmt.Errorf("create bucket: %s", err)
 		}
-		fmt.Printf("Bucket %c exists\n", b)
 		return nil
 	})
 	db.Close()
