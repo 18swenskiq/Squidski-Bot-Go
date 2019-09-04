@@ -109,7 +109,7 @@ func (c *GenericCommand) UseCasino(session *discordgo.Session, message *discordg
 			session.ChannelMessageSend(message.ChannelID, "Wagered amount cannot be a negative number or zero")
 			return
 		}
-		if wageredAmount < userSquidCoins {
+		if wageredAmount > userSquidCoins {
 			session.ChannelMessageSend(message.ChannelID, "You cannot bet more coins than you have!")
 			return
 		}
@@ -211,5 +211,9 @@ func (c *GenericCommand) UseCasino(session *discordgo.Session, message *discordg
 				return
 			}
 		}
+
+	case "resetcoins":
+		database.WriteToDB("CasinoUsers", message.Author.ID, "100,"+strconv.Itoa(userTimesGambled)+","+strconv.Itoa(userCoinsLost))
+		session.ChannelMessageSend(message.ChannelID, "Coins reset to 100!")
 	}
 }
