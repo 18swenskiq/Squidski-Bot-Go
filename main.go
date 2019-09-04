@@ -56,6 +56,7 @@ func main() {
 	database.EnsureBucketsExist("SquidskiFacts")
 	database.EnsureBucketsExist("SeinfeldQuotes")
 	database.EnsureBucketsExist("CasinoUsers")
+	database.EnsureBucketsExist("KetalQuotes")
 
 	// Print globalcall
 	fmt.Println("The global call symbol is " + globalCall)

@@ -20,7 +20,7 @@ func (c *CommandHandler) ExecuteCommand(session *discordgo.Session, message *dis
 
 	switch messageArray[0] {
 	case "help":
-		commandList.BuildHelpEmbed(session, message, adminRole)
+		commandList.BuildHelpEmbed(session, message, adminRole, messageArray)
 		break
 	case "currency":
 		commandList.GetCurrency(session, message, messageArray)
@@ -57,6 +57,9 @@ func (c *CommandHandler) ExecuteCommand(session *discordgo.Session, message *dis
 		break
 	case "c":
 		commandList.UseCasino(session, message, messageArray)
+		break
+	case "ketalquote":
+		commandList.GetKetalQuote(session, message)
 		break
 	}
 }
