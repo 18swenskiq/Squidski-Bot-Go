@@ -31,6 +31,11 @@ func (c *GenericCommand) BuildHelpEmbed(session *discordgo.Session, message *dis
 				Inline: false,
 			},
 			&discordgo.MessageEmbedField{
+				Name:   "**KetalQuote:**",
+				Value:  ">ketalquote\nSends a quote from our favorite Russian",
+				Inline: false,
+			},
+			&discordgo.MessageEmbedField{
 				Name:   "**Mute (Admin Only):**",
 				Value:  ">mute <user> <time in minutes>\nSends a user to the void for a given amount of time",
 				Inline: false,

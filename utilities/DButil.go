@@ -42,7 +42,7 @@ func (c *GeneralDB) DeleteKey(bucket string, keyName string) {
 	db.Close()
 }
 
-func (c *GeneralDB) ReadKey(bucket string, keyName string) []byte {
+func (c *GeneralDB) ReadKey(bucket string, keyName string) string {
 
 	db, err := bolt.Open("./storage.db", 0600, nil)
 	if err != nil {
@@ -57,7 +57,7 @@ func (c *GeneralDB) ReadKey(bucket string, keyName string) []byte {
 		return nil
 	})
 	db.Close()
-	return v
+	return string(v)
 }
 
 func (c *GeneralDB) IterateOverKeysInBucketReturnBoth(bucket string) ([]string, []string) {

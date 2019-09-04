@@ -61,5 +61,8 @@ func (c *CommandHandler) ExecuteCommand(session *discordgo.Session, message *dis
 	case "ketalquote":
 		commandList.GetKetalQuote(session, message)
 		break
+	case "bruhmoment":
+		commandList.BruhMoment(session, message)
+		break
 	}
 }
