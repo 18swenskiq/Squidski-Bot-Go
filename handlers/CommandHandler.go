@@ -64,5 +64,8 @@ func (c *CommandHandler) ExecuteCommand(session *discordgo.Session, message *dis
 	case "bruhmoment":
 		commandList.BruhMoment(session, message)
 		break
+	case "times":
+		commandList.GetTimeZones(session, message)
+		break
 	}
 }
