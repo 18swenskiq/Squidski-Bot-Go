@@ -98,3 +98,22 @@ func (c *GeneralDB) EnsureBucketsExist(buckets string) {
 	})
 	db.Close()
 }
+
+func (c *GeneralDB) CheckBucketExists(buckets string) bool {
+	db, err := bolt.Open("storage.db", 0600, nil)
+	if err != nil {
+		return false
+	}
+	defer db.Close()
+
+	x := db.View(func(tx *bolt.Tx) error {
+		_ = tx.Bucket([]byte(buckets))
+		return nil
+	})
+
+	if x != nil {
+		return false
+	} else {
+		return true
+	}
+}

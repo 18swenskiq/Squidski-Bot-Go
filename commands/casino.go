@@ -30,8 +30,9 @@ func (c *GenericCommand) UseCasino(session *discordgo.Session, message *discordg
 		// We don't need to extract all of our values from the database for this query again, since we can just append the new stuff in the DB to the slice we got earlier
 		nameValues = append(nameValues, message.Author.ID)
 		keyValues = append(keyValues, "1000,0,0")
-		session.ChannelMessageSend(message.ChannelID, "I see you've never used the casino before. Welcome. I will give you 1000 Squidcoins to start off with.")
-		database.WriteToDB("CasinoUsers", message.Author.ID, "1000,0,0")
+		session.ChannelMessageSend(message.ChannelID, "I see you've never used the casino before. Welcome. I will give you 1000 Squidcoins to start off with. Since I've just created your account, type your command again to use the casino.")
+		go database.WriteToDB("CasinoUsers", message.Author.ID, "1000,0,0")
+		return
 	}
 
 	// If not enough arguments were provided, we're not even gonna go into the casino command parsr
@@ -150,11 +151,11 @@ func (c *GenericCommand) UseCasino(session *discordgo.Session, message *discordg
 		userBet, _ := strconv.Atoi(messageArray[3])
 		if !isBetPhrase {
 			if messageArray[2] == strconv.Itoa(rouletteChoice) {
-				database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa((userSquidCoins-userBet)+userBet*36)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost))
+				go database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa((userSquidCoins-userBet)+userBet*36)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost))
 				session.ChannelMessageSend(message.ChannelID, "Congrats! Your correct bet has netted you "+strconv.Itoa(userBet*36)+" Squidcoins for a total of "+strconv.Itoa((userSquidCoins-userBet)+userBet*36)+" coins!")
 				return
 			} else {
-				database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa(userSquidCoins-userBet)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost+userBet))
+				go database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa(userSquidCoins-userBet)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost+userBet))
 				session.ChannelMessageSend(message.ChannelID, "Your incorrect bet has lost you "+strconv.Itoa(userBet)+" Squidcoins for a total of "+strconv.Itoa(userSquidCoins-userBet)+" coins.")
 				return
 			}
@@ -162,58 +163,58 @@ func (c *GenericCommand) UseCasino(session *discordgo.Session, message *discordg
 		switch strings.ToLower(messageArray[2]) {
 		case "evens":
 			if rouletteChoice%2 == 0 {
-				database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa((userSquidCoins-userBet)+userBet*2)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost))
+				go database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa((userSquidCoins-userBet)+userBet*2)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost))
 				session.ChannelMessageSend(message.ChannelID, "Congrats! Your correct bet has netted you "+strconv.Itoa(userBet*2)+" Squidcoins for a total of "+strconv.Itoa((userSquidCoins-userBet)+userBet*2)+" coins!")
 				return
 			} else {
-				database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa(userSquidCoins-userBet)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost+userBet))
+				go database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa(userSquidCoins-userBet)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost+userBet))
 				session.ChannelMessageSend(message.ChannelID, "Your incorrect bet has lost you "+strconv.Itoa(userBet)+" Squidcoins for a total of "+strconv.Itoa(userSquidCoins-userBet)+" coins.")
 				return
 			}
 		case "odds":
 			if rouletteChoice%2 != 0 {
-				database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa((userSquidCoins-userBet)+userBet*2)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost))
+				go database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa((userSquidCoins-userBet)+userBet*2)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost))
 				session.ChannelMessageSend(message.ChannelID, "Congrats! Your correct bet has netted you "+strconv.Itoa(userBet*2)+" Squidcoins for a total of "+strconv.Itoa((userSquidCoins-userBet)+userBet*2)+" coins!")
 				return
 			} else {
-				database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa(userSquidCoins-userBet)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost+userBet))
+				go database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa(userSquidCoins-userBet)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost+userBet))
 				session.ChannelMessageSend(message.ChannelID, "Your incorrect bet has lost you "+strconv.Itoa(userBet)+" Squidcoins for a total of "+strconv.Itoa(userSquidCoins-userBet)+" coins.")
 				return
 			}
 		case "red":
 			if chosenColor == "red" {
-				database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa((userSquidCoins-userBet)+userBet*2)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost))
+				go database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa((userSquidCoins-userBet)+userBet*2)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost))
 				session.ChannelMessageSend(message.ChannelID, "Congrats! Your correct bet has netted you "+strconv.Itoa(userBet*2)+" Squidcoins for a total of "+strconv.Itoa((userSquidCoins-userBet)+userBet*2)+" coins!")
 				return
 			} else {
-				database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa(userSquidCoins-userBet)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost+userBet))
+				go database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa(userSquidCoins-userBet)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost+userBet))
 				session.ChannelMessageSend(message.ChannelID, "Your incorrect bet has lost you "+strconv.Itoa(userBet)+" Squidcoins for a total of "+strconv.Itoa(userSquidCoins-userBet)+" coins.")
 				return
 			}
 		case "black":
 			if chosenColor == "black" {
-				database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa((userSquidCoins-userBet)+userBet*2)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost))
+				go database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa((userSquidCoins-userBet)+userBet*2)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost))
 				session.ChannelMessageSend(message.ChannelID, "Congrats! Your correct bet has netted you "+strconv.Itoa(userBet*2)+" Squidcoins for a total of "+strconv.Itoa((userSquidCoins-userBet)+userBet*2)+" coins!")
 				return
 			} else {
-				database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa(userSquidCoins-userBet)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost+userBet))
+				go database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa(userSquidCoins-userBet)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost+userBet))
 				session.ChannelMessageSend(message.ChannelID, "Your incorrect bet has lost you "+strconv.Itoa(userBet)+" Squidcoins for a total of "+strconv.Itoa(userSquidCoins-userBet)+" coins.")
 				return
 			}
 		case "green":
 			if chosenColor == "green" {
-				database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa((userSquidCoins-userBet)+userBet*2)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost))
+				go database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa((userSquidCoins-userBet)+userBet*2)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost))
 				session.ChannelMessageSend(message.ChannelID, "Congrats! Your correct bet has netted you "+strconv.Itoa(userBet*2)+" Squidcoins for a total of "+strconv.Itoa((userSquidCoins-userBet)+userBet*2)+" coins!")
 				return
 			} else {
-				database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa(userSquidCoins-userBet)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost+userBet))
+				go database.WriteToDB("CasinoUsers", message.Author.ID, strconv.Itoa(userSquidCoins-userBet)+","+strconv.Itoa(userTimesGambled+1)+","+strconv.Itoa(userCoinsLost+userBet))
 				session.ChannelMessageSend(message.ChannelID, "Your incorrect bet has lost you "+strconv.Itoa(userBet)+" Squidcoins for a total of "+strconv.Itoa(userSquidCoins-userBet)+" coins.")
 				return
 			}
 		}
 
 	case "resetcoins":
-		database.WriteToDB("CasinoUsers", message.Author.ID, "100,"+strconv.Itoa(userTimesGambled)+","+strconv.Itoa(userCoinsLost))
+		go database.WriteToDB("CasinoUsers", message.Author.ID, "100,"+strconv.Itoa(userTimesGambled)+","+strconv.Itoa(userCoinsLost))
 		session.ChannelMessageSend(message.ChannelID, "Coins reset to 100!")
 	}
 }

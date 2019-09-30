@@ -18,6 +18,10 @@ func (c *GenericCommand) AddToDB(session *discordgo.Session, message *discordgo.
 	}
 	var database *utilities.GeneralDB
 	database = new(utilities.GeneralDB)
+	//if !(database.CheckBucketExists(messageArray[1])) {
+	//session.ChannelMessageSend(message.ChannelID, "The bucket "+messageArray[1]+" could not be found!")
+	//return
+	//}
 	database.WriteToDB(messageArray[1], messageArray[2], strings.Join(messageArray[3:], " "))
 	session.ChannelMessageSend(message.ChannelID, "KeyName \"**"+messageArray[2]+"**\" with value of \"**"+strings.Join(messageArray[3:], " ")+"**\" was written to bucket \"**"+messageArray[1]+"**\".")
 }
